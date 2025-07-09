@@ -1,6 +1,7 @@
 import Header from "./components/Header";
 import Content from "./components/Content";
-import Counter from "./components/Counter"; // <-- Import komponen baru
+import Counter from "./components/Counter";
+import InputField from "./components/InputField"; // <-- Import komponen baru
 
 export default function Home() {
   return (
@@ -8,10 +9,10 @@ export default function Home() {
       <Header judul="Selamat Datang di Portofolioku!" />
       <Content
         paragraf1="Saya sedang belajar konsep State di React."
-        paragraf2="Ini adalah komponen interaktif pertama saya."
+        paragrap2="Ini adalah komponen interaktif pertama saya."
       />
-      {/* Panggil komponen Counter di sini */}
       <Counter />
+      <InputField /> {/* <-- Panggil komponen baru di sini */}
     </main>
   );
 }
