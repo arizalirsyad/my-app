@@ -2,28 +2,29 @@
 import { useState } from 'react';
 
 export default function TodoList() {
-  // State untuk menyimpan daftar tugas (array of strings)
   const [todos, setTodos] = useState(['Belajar React', 'Mengerjakan Proyek Portofolio']);
-
-  // State untuk menyimpan teks dari input tugas baru
   const [newTodo, setNewTodo] = useState('');
 
-  // Fungsi untuk menangani penambahan tugas baru
   function handleAddTodo() {
-    // Jangan tambahkan jika input kosong
     if (newTodo.trim() !== '') {
-      // Tambahkan tugas baru ke dalam array todos yang sudah ada
       setTodos([...todos, newTodo]);
-      // Kosongkan kembali input field
       setNewTodo('');
     }
+  }
+
+  // --- FUNGSI BARU ---
+  // Fungsi untuk menghapus tugas berdasarkan posisinya (index)
+  function handleDeleteTodo(indexToDelete) {
+    // Buat array baru yang berisi semua todos KECUALI yang index-nya sama dengan indexToDelete
+    const newTodos = todos.filter((_, index) => index !== indexToDelete);
+    // Update state dengan array yang baru
+    setTodos(newTodos);
   }
 
   return (
     <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem', borderRadius: '8px' }}>
       <h3>My To-Do List</h3>
-
-      {/* Form untuk menambah tugas baru */}
+      
       <input
         type="text"
         value={newTodo}
@@ -35,11 +36,16 @@ export default function TodoList() {
         Tambah
       </button>
 
-      {/* Daftar tugasnya */}
       <ul style={{ listStyleType: 'none', padding: 0, marginTop: '1rem' }}>
         {todos.map((todo, index) => (
-          <li key={index} style={{ background: '#f4f4f4', margin: '4px 0', padding: '8px', borderRadius: '4px' }}>
-            {todo}
+          <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f4f4f4', margin: '4px 0', padding: '8px', borderRadius: '4px' }}>
+            {/* Teks tugas */}
+            <span>{todo}</span>
+            
+            {/* --- TOMBOL BARU --- */}
+            <button onClick={() => handleDeleteTodo(index)} style={{ background: 'red', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>
+              Hapus
+            </button>
           </li>
         ))}
       </ul>
