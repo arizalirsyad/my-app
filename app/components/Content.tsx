@@ -1,12 +1,14 @@
-export default function Content() {
+// 1. Definisikan "cetakan" untuk props kita menggunakan interface
+interface ContentProps {
+  content: string; // Kita bilang bahwa komponen ini WAJIB menerima prop bernama "judul" yang tipenya string
+}
+
+// 2. Terima props tersebut di dalam function
+export default function Content({ content }: ContentProps) {
+  // 3. Gunakan nilai dari prop di dalam JSX
   return (
-    <div>
-      <p>
-        Saya sedang belajar Next.js.
-      </p>
-      <p>
-        Langkah selanjutnya adalah menyimpan perubahan ini ke GitHub.
-      </p>
-    </div>
+    <header>
+      <p>{content}</p>
+    </header>
   );
 }
