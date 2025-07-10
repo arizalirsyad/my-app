@@ -1,29 +1,55 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function TodoList() {
-  const [todos, setTodos] = useState(['Belajar React', 'Mengerjakan Proyek Portofolio']);
+  const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
 
-  function handleAddTodo() {
-    if (newTodo.trim() !== '') {
-      setTodos([...todos, newTodo]);
+  useEffect(() => {
+    getTodos();
+  }, []);
+
+  async function getTodos() {
+    const { data, error } = await supabase
+      .from('todos')
+      .select('*');
+    if (error) console.error('Error fetching todos:', error);
+    else setTodos(data);
+  }
+
+  async function handleAddTodo() {
+    if (newTodo.trim() === '') return;
+    const { error } = await supabase
+      .from('todos')
+      .insert([{ task: newTodo }]);
+    if (error) {
+      console.error('Error adding todo:', error);
+    } else {
+      await getTodos();
       setNewTodo('');
     }
   }
 
-  // --- FUNGSI BARU ---
-  // Fungsi untuk menghapus tugas berdasarkan posisinya (index)
-  function handleDeleteTodo(indexToDelete) {
-    // Buat array baru yang berisi semua todos KECUALI yang index-nya sama dengan indexToDelete
-    const newTodos = todos.filter((_, index) => index !== indexToDelete);
-    // Update state dengan array yang baru
-    setTodos(newTodos);
+  // --- FUNGSI handleDeleteTodo SEKARANG MENGGUNAKAN SUPABASE ---
+  async function handleDeleteTodo(id) {
+    // Hapus baris dari tabel 'todos' di mana kolom 'id'-nya cocok
+    const { error } = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting todo:', error);
+    } else {
+      // Jika berhasil, panggil getTodos() untuk me-refresh daftar
+      await getTodos();
+    }
   }
 
   return (
     <div style={{ border: '1px solid #ccc', padding: '1rem', marginTop: '1rem', borderRadius: '8px' }}>
-      <h3>My To-Do List</h3>
+      <h3>My To-Do List (from Database)</h3>
       
       <input
         type="text"
@@ -37,13 +63,10 @@ export default function TodoList() {
       </button>
 
       <ul style={{ listStyleType: 'none', padding: 0, marginTop: '1rem' }}>
-        {todos.map((todo, index) => (
-          <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f4f4f4', margin: '4px 0', padding: '8px', borderRadius: '4px' }}>
-            {/* Teks tugas */}
-            <span>{todo}</span>
-            
-            {/* --- TOMBOL BARU --- */}
-            <button onClick={() => handleDeleteTodo(index)} style={{ background: 'red', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>
+        {todos.map((todo) => (
+          <li key={todo.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f4f4f4', margin: '4px 0', padding: '8px', borderRadius: '4px' }}>
+            <span>{todo.task}</span>
+            <button onClick={() => handleDeleteTodo(todo.id)} style={{ background: 'red', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>
               Hapus
             </button>
           </li>
