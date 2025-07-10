@@ -31,19 +31,17 @@ export default function TodoList() {
     }
   }
 
-  // --- FUNGSI handleDeleteTodo SEKARANG MENGGUNAKAN SUPABASE ---
   async function handleDeleteTodo(id) {
-    // Hapus baris dari tabel 'todos' di mana kolom 'id'-nya cocok
     const { error } = await supabase
       .from('todos')
       .delete()
       .eq('id', id);
-
     if (error) {
       console.error('Error deleting todo:', error);
     } else {
-      // Jika berhasil, panggil getTodos() untuk me-refresh daftar
-      await getTodos();
+      // Optimistic UI update: Remove todo from local state immediately
+      // This makes the UI feel faster than waiting for getTodos()
+      setTodos(todos.filter((todo) => todo.id !== id));
     }
   }
 
